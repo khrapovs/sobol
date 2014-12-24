@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/khrapovs/sobol.svg
+    :target: https://travis-ci.org/khrapovs/sobol
+    
 .. image:: https://readthedocs.org/projects/sobol/badge/?version=latest
 	:target: https://readthedocs.org/projects/sobol/?badge=latest
 	:alt: Documentation Status
