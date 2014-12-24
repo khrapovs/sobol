@@ -18,7 +18,6 @@
 *.xlsx
 *.pptx
 *.log
-*.png
 *.dat
 *.p
 *.npy

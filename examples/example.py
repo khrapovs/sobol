@@ -44,6 +44,7 @@ def plot_uniforms():
     for ax in axes:
         ax.set_xlim([0, 1])
         ax.set_ylim([0, 1])
+    plt.savefig('../docs/source/_static/uniforms.png')
     plt.show()
 
 

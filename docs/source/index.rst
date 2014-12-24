@@ -6,7 +6,7 @@
 Sobol pseudo-random number generator
 ====================================
 
-.. image:: uniforms.png
+.. image:: _static/uniforms.png
 
 .. toctree::
    :maxdepth: 2
