@@ -1,3 +1,7 @@
+.. image:: https://readthedocs.org/projects/sobol/badge/?version=latest
+	:target: https://readthedocs.org/projects/sobol/?badge=latest
+	:alt: Documentation Status
+
 Sobol pseudo-random number generator
 ====================================
 
