@@ -10,17 +10,55 @@ Original authors
 
 Original code: http://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html
 
+Functions
+---------
+
 """
 from __future__ import print_function, division
 
 import math
-from numpy import *
+import numpy as np
 
-__all__ = ['i4_sobol_generate']
+__all__ = ['sobol_rvs']
+
+
+def sobol_rvs(size=10, skip=10):
+    """Generates a Sobol pseudo-random dataset.
+
+    Parameters
+    ----------
+    size : int or tuple
+        Size of the output array
+    skip : int
+        Number of initial points to skip
+
+    Returns
+    -------
+    r : array
+        Array of random numbers
+
+    Examples
+    --------
+    >>> from sobol import sobol_rvs
+    >>> rvs = sobol_rvs(size=(2, 3), skip=1000)
+    >>> print(rvs)
+    [[ 0.15722656  0.21972656  0.71972656]
+     [ 0.90917969  0.09667969  0.59667969]]
+
+    """
+    if isinstance(size, int):
+        m, n = 1, size
+    else:
+        m, n = size
+    r = np.zeros((m, n))
+    for j in range(n):
+        seed = skip + j - 1
+        [r[:m, j], seed] = i4_sobol(m, seed)
+    return r.squeeze()
 
 
 def i4_bit_hi1(n):
-    """I4_BIT_HI1 returns the position of the high 1 bit base 2 in an integer.
+    """Returns the position of the high 1 bit base 2 in an integer.
 
     Parameters
     ----------
@@ -73,7 +111,7 @@ def i4_bit_hi1(n):
 
 
 def i4_bit_lo0(n):
-    """I4_BIT_LO0 returns the position of the low 0 bit base 2 in an integer.
+    """Returns the position of the low 0 bit base 2 in an integer.
 
     Parameters
     ----------
@@ -118,7 +156,7 @@ def i4_bit_lo0(n):
     bit = 0
     i = math.floor(n)
     while (1):
-        bit = bit + 1
+        bit += 1
         i2 = math.floor(i/2)
         if (i == 2 * i2):
             break
@@ -126,39 +164,14 @@ def i4_bit_lo0(n):
     return bit
 
 
-def i4_sobol_generate(m, n, skip):
-    """Generates a Sobol pseudo-random dataset.
+def i4_sobol(dim, seed):
+    """Generates a new quasirandom Sobol vector with each call.
 
     Parameters
     ----------
-    m : int
-        Spatial dimension
-    n : int
-        Number of points to generate
-    skip : int
-        Number of initial points to skip
-
-    Returns
-    -------
-    r : (m, n) array
-        Array of random numbers
-
-    """
-    r = zeros((m, n))
-    for j in range(1, n+1):
-        seed = skip + j - 2
-        [r[0:m, j-1], seed] = i4_sobol(m, seed)
-    return r
-
-
-def i4_sobol(dim_num, seed):
-    """I4_SOBOL generates a new quasirandom Sobol vector with each call.
-
-    Parameters
-    ----------
-    dim_num : int
+    dim : int
         The number of spatial dimensions
-        Must satisfy 1 <= dim_num <= 40
+        Must satisfy 1 <= dim <= 40
     seed : int
         Input/output, integer SEED, the "seed" for the sequence.
         This is essentially the index in the sequence of the quasirandom
@@ -169,7 +182,7 @@ def i4_sobol(dim_num, seed):
 
     Returns
     -------
-    quasi : float
+    quasi : array
         The next quasirandom vector
     seed : int
         The "seed" for the sequence
@@ -177,7 +190,7 @@ def i4_sobol(dim_num, seed):
     """
     global atmost
     global dim_max
-    global dim_num_save
+    global dim_save
     global initialized
     global lastq
     global log_max
@@ -189,61 +202,61 @@ def i4_sobol(dim_num, seed):
 
     if (not 'initialized' in globals().keys()):
         initialized = 0
-        dim_num_save = -1
+        dim_save = -1
 
-    if (not initialized or dim_num != dim_num_save):
+    if (not initialized or dim != dim_save):
         initialized = 1
         dim_max = 40
-        dim_num_save = -1
+        dim_save = -1
         log_max = 30
         seed_save = -1
 
-        #    Initialize (part of) V.
+        # Initialize (part of) V.
 
-        v = zeros((dim_max, log_max))
-        v[0:40, 0] = transpose([
+        v = np.zeros((dim_max, log_max))
+        v[0:40, 0] = np.transpose([
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-        v[2:40, 1] = transpose([
+        v[2:40, 1] = np.transpose([
             1, 3, 1, 3, 1, 3, 3, 1,
             3, 1, 3, 1, 3, 1, 1, 3, 1, 3,
             1, 3, 1, 3, 3, 1, 3, 1, 3, 1,
             3, 1, 1, 3, 1, 3, 1, 3, 1, 3])
 
-        v[3:40, 2] = transpose([
+        v[3:40, 2] = np.transpose([
             7, 5, 1, 3, 3, 7, 5,
             5, 7, 7, 1, 3, 3, 7, 5, 1, 1,
             5, 3, 3, 1, 7, 5, 1, 3, 3, 7,
             5, 1, 1, 5, 7, 7, 5, 1, 3, 3])
 
-        v[5:40, 3] = transpose([
+        v[5:40, 3] = np.transpose([
             1, 7, 9, 13, 11,
             1, 3, 7, 9, 5, 13, 13, 11, 3, 15,
             5, 3, 15, 7, 9, 13, 9, 1, 11, 7,
             5, 15, 1, 15, 11, 5, 3, 1, 7, 9])
 
-        v[7:40, 4] = transpose([
+        v[7:40, 4] = np.transpose([
             9, 3, 27,
             15, 29, 21, 23, 19, 11, 25, 7, 13, 17,
             1, 25, 29, 3, 31, 11, 5, 23, 27, 19,
             21, 5, 1, 17, 13, 7, 15, 9, 31, 9])
 
-        v[13:40, 5] = transpose([
+        v[13:40, 5] = np.transpose([
             37, 33, 7, 5, 11, 39, 63,
             27, 17, 15, 23, 29, 3, 21, 13, 31, 25,
             9, 49, 33, 19, 29, 11, 19, 27, 15, 25])
 
-        v[19:40, 6] = transpose([
+        v[19:40, 6] = np.transpose([
             13,
             33, 115, 41, 79, 17, 29, 119, 75, 73, 105,
             7, 59, 65, 21, 3, 113, 61, 89, 45, 107])
 
-        v[37:40, 7] = transpose([7, 23, 39])
+        v[37:40, 7] = np.transpose([7, 23, 39])
 
-        #    Set POLY.
+        # Set POLY.
 
         poly = [
             1,     3,     7,    11,    13,    19,    25,    37,    59,    47,
@@ -253,30 +266,30 @@ def i4_sobol(dim_num, seed):
 
         atmost = 2**log_max - 1
 
-        #    Find the number of bits in ATMOST.
+        # Find the number of bits in ATMOST.
 
         maxcol = i4_bit_hi1(atmost)
 
-        #    Initialize row 1 of V.
+        # Initialize row 1 of V.
 
         v[0, 0:maxcol] = 1
 
-    #    Things to do only if the dimension changed.
+    # Things to do only if the dimension changed.
 
-    if (dim_num != dim_num_save):
-    #    Check parameters.
+    if (dim != dim_save):
+    # Check parameters.
 
-        if (dim_num < 1 or dim_max < dim_num):
+        if (dim < 1 or dim_max < dim):
             print('I4_SOBOL - Fatal error!')
-            print('    The spatial dimension DIM_NUM should satisfy:')
-            print('        1 <= DIM_NUM <= %d' % dim_max)
-            print('    But this input value is DIM_NUM = %d' % dim_num)
+            print('    The spatial dimension dim should satisfy:')
+            print('        1 <= dim <= %d' % dim_max)
+            print('    But this input value is dim = %d' % dim)
             return
 
-        dim_num_save = dim_num
+        dim_save = dim
 
-        #    Initialize the remaining rows of V.
-        for i in range(2, dim_num+1):
+        # Initialize the remaining rows of V.
+        for i in range(2, dim+1):
 
             # The bits of the integer POLY(I) gives the form of polynomial I.
 
@@ -294,7 +307,7 @@ def i4_sobol(dim_num, seed):
             # array INCLUD.
 
             j = poly[i-1]
-            includ = zeros(m)
+            includ = np.zeros(m)
             for k in range(m, 0, -1):
                 j2 = math.floor(j/2)
                 includ[k-1] = (j != 2 * j2)
@@ -308,7 +321,8 @@ def i4_sobol(dim_num, seed):
                 for k in range(1, m+1):
                     l = 2 * l
                     if (includ[k-1]):
-                        newv = bitwise_xor(int(newv), int(l * v[i-1, j-k-1]))
+                        newv = np.bitwise_xor(int(newv),
+                                              int(l * v[i-1, j-k-1]))
                 v[i-1, j-1] = newv
 
         # Multiply columns of V by appropriate power of 2.
@@ -316,11 +330,11 @@ def i4_sobol(dim_num, seed):
         l = 1
         for j in range(maxcol-1, 0, -1):
             l = 2 * l
-            v[0:dim_num, j-1] = v[0:dim_num, j-1] * l
+            v[0:dim, j-1] = v[0:dim, j-1] * l
 
         # RECIPD is 1/(common denominator of the elements in V).
         recipd = 1 / (2*l)
-        lastq = zeros(dim_num)
+        lastq = np.zeros(dim)
 
     seed = int(math.floor(seed))
 
@@ -329,7 +343,7 @@ def i4_sobol(dim_num, seed):
 
     if (seed == 0):
         l = 1
-        lastq = zeros(dim_num)
+        lastq = np.zeros(dim)
 
     elif (seed == seed_save + 1):
 
@@ -341,12 +355,12 @@ def i4_sobol(dim_num, seed):
 
         seed_save = 0
         l = 1
-        lastq = zeros(dim_num)
+        lastq = np.zeros(dim)
 
         for seed_temp in range(int(seed_save), int(seed)):
             l = i4_bit_lo0(seed_temp)
-            for i in range(1, dim_num+1):
-                lastq[i-1] = bitwise_xor(int(lastq[i-1]), int(v[i-1, l-1]))
+            for i in range(1, dim+1):
+                lastq[i-1] = np.bitwise_xor(int(lastq[i-1]), int(v[i-1, l-1]))
 
         l = i4_bit_lo0(seed)
 
@@ -354,8 +368,8 @@ def i4_sobol(dim_num, seed):
 
         for seed_temp in range(int(seed_save + 1), int(seed)):
             l = i4_bit_lo0(seed_temp)
-            for i in range(1, dim_num+1):
-                lastq[i-1] = bitwise_xor(int(lastq[i-1]), int(v[i-1, l-1]))
+            for i in range(1, dim+1):
+                lastq[i-1] = np.bitwise_xor(int(lastq[i-1]), int(v[i-1, l-1]))
 
         l = i4_bit_lo0(seed)
 
@@ -370,10 +384,10 @@ def i4_sobol(dim_num, seed):
 
     # Calculate the new components of QUASI.
 
-    quasi = zeros(dim_num)
-    for i in range(1, dim_num+1):
-        quasi[i-1] = lastq[i-1] * recipd
-        lastq[i-1] = bitwise_xor(int(lastq[i-1]), int(v[i-1, l-1]))
+    quasi = np.zeros(dim)
+    for i in range(dim):
+        quasi[i] = lastq[i] * recipd
+        lastq[i] = np.bitwise_xor(int(lastq[i]), int(v[i, l-1]))
 
     seed_save = seed
     seed = seed + 1
@@ -382,7 +396,7 @@ def i4_sobol(dim_num, seed):
 
 
 def i4_uniform(a, b, seed):
-    """I4_UNIFORM returns a scaled pseudorandom I4.
+    """Returns a scaled pseudorandom I4.
 
     Discussion:
 
@@ -414,7 +428,7 @@ def i4_uniform(a, b, seed):
     a = round(a)
     b = round(b)
 
-    seed = mod(seed, 2147483647)
+    seed = np.mod(seed, 2147483647)
 
     if (seed < 0):
         seed = seed + 2147483647
@@ -445,7 +459,7 @@ def i4_uniform(a, b, seed):
 
 
 def prime_ge(n):
-    """PRIME_GE returns the smallest prime greater than or equal to N.
+    """Returns the smallest prime greater than or equal to N.
 
     Parameters
     ----------
@@ -477,13 +491,13 @@ def prime_ge(n):
     """
     p = max(math.ceil(n), 2)
     while (not isprime(p)):
-        p = p + 1
+        p += 1
 
     return p
 
 
 def isprime(n):
-    """IS_PRIME returns True if N is a prime number, False otherwise.
+    """Returns True if N is a prime number, False otherwise.
 
     Parameters
     ----------
@@ -504,8 +518,3 @@ def isprime(n):
             return False
         p += 1
     return True
-
-
-if __name__ == '__main__':
-    print(i4_bit_hi1(1025))
-    print(i4_bit_lo0(3))
