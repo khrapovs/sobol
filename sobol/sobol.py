@@ -25,16 +25,19 @@ import numpy as np
 
 from .helper_functions import i4_sobol
 
+__author__ = "Stanislav Khrapov"
+__email__ = "khrapovs@gmail.com"
 __all__ = ['sobol_rvs']
 
 
 def sobol_rvs(size=10, skip=10):
-    """Generates a Sobol pseudo-random dataset.
+    r"""Generates a Sobol pseudo-random dataset.
 
     Parameters
     ----------
     size : int or tuple
-        Size of the output array
+        Size of the output array.
+        If tuple, then the second dimension is bounded by 40.
     skip : int
         Number of initial points to skip
 
@@ -42,6 +45,10 @@ def sobol_rvs(size=10, skip=10):
     -------
     array
         Random numbers
+
+    Raises
+    ------
+    ValueError
 
     Examples
     --------
@@ -56,6 +63,9 @@ def sobol_rvs(size=10, skip=10):
         m, n = 1, size
     else:
         m, n = size
+        if m > 40 or m < 1:
+            msg = 'Spacial dimension should be smaller than 40!'
+            raise ValueError(msg)
     r = np.zeros((m, n))
     for j in range(n):
         seed = skip + j - 1

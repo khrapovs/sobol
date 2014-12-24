@@ -232,14 +232,6 @@ def i4_sobol(dim, seed):
     # Things to do only if the dimension changed.
 
     if (dim != dim_save):
-    # Check parameters.
-
-        if (dim < 1 or dim_max < dim):
-            print('I4_SOBOL - Fatal error!')
-            print('    The spatial dimension dim should satisfy:')
-            print('        1 <= dim <= %d' % dim_max)
-            print('    But this input value is dim = %d' % dim)
-            return
 
         dim_save = dim
 
@@ -329,13 +321,9 @@ def i4_sobol(dim, seed):
         l = i4_bit_lo0(seed)
 
     # Check that the user is not calling too many times!
-
     if (maxcol < l):
-        print('I4_SOBOL - Fatal error!')
-        print('    Too many calls!')
-        print('    MAXCOL = %d\n' % maxcol)
-        print('    L =            %d\n' % l)
-        return
+        msg = 'Too many calls!' + ('MAXCOL = %d\n' % maxcol) + ('L = %d\n' % l)
+        raise ValueError(msg)
 
     # Calculate the new components of QUASI.
 
