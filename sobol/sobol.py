@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-
-Original code: http://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html
+r"""
 
 Original authors
 ----------------
-Original FORTRAN77 version by Bennett Fox.
-Original MATLAB version by John Burkardt.
-PYTHON version by Corrado Chisari
+    - Original FORTRAN77 version by Bennett Fox.
+    - Original MATLAB version by John Burkardt.
+    - PYTHON version by Corrado Chisari
+
+Original code: http://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html
 
 """
 from __future__ import print_function, division
@@ -127,21 +127,21 @@ def i4_bit_lo0(n):
 
 
 def i4_sobol_generate(m, n, skip):
-    """I4_SOBOL_GENERATE generates a Sobol dataset.
+    """Generates a Sobol pseudo-random dataset.
 
     Parameters
     ----------
     m : int
-        the spatial dimension
+        Spatial dimension
     n : int
-        the number of points to generate
+        Number of points to generate
     skip : int
-        the number of initial points to skip
+        Number of initial points to skip
 
     Returns
     -------
-    r ; (m, n) array
-        the points
+    r : (m, n) array
+        Array of random numbers
 
     """
     r = zeros((m, n))
