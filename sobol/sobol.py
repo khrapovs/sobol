@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 r"""
 
+Sobol pseudo-random number generator
+====================================
+
+.. image:: _static/uniforms.png
+
 Original authors
 ----------------
-    - Original FORTRAN77 version by Bennett Fox.
-    - Original MATLAB version by John Burkardt.
-    - PYTHON version by Corrado Chisari
+    - Original FORTRAN77 version by Bennett Fox
+    - Original MATLAB version by John Burkardt
+    - Original PYTHON version by Corrado Chisari
 
 Original code: http://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html
 

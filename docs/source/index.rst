@@ -3,11 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Sobol pseudo-random number generator
-====================================
-
-.. image:: _static/uniforms.png
-
 .. toctree::
    :maxdepth: 2
 
