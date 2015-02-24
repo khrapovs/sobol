@@ -14,7 +14,7 @@ def plot_normals():
     """Plot normal densities.
 
     """
-    size, skip = 100, 1000
+    size, skip = 100, 10
 
     unif = sobol_rvs(size=size, skip=skip)
     normals_sobol = norm.ppf(unif)
@@ -28,11 +28,12 @@ def plot_normals():
     plt.legend()
     plt.show()
 
+
 def plot_uniforms():
     """Plot uniform random numbers.
 
     """
-    size, skip = (2, 100), 1000
+    size, skip = (2, 100), 10
     unif_sobol = sobol_rvs(size=size, skip=skip)
     unif_scipy = uniform.rvs(size=size)
 
